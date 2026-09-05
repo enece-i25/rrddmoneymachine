@@ -28,7 +28,7 @@ services:
       - root_node_modules:/workspace/node_modules
     environment:
       VITE_API_URL: http://localhost:4000
-    ports: !override
+    ports:
       - "8082:8081"
     depends_on:
       api:

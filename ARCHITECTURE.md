@@ -74,7 +74,7 @@ Shared rules:
 2. Build and start:
    - docker-compose up --build
 3. Optional hot-reload dev setup:
-   - docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+   - docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
    The production web container is available on port 8081. The development override serves Vite on port 8082.
 

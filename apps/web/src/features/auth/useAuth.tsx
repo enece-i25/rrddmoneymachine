@@ -15,6 +15,7 @@ type User = {
   userId: string;
   email: string;
   role: Role;
+  adminSubrole: "super_admin" | "support" | "finance" | null;
   status: "pending_verification" | "active" | "suspended" | "banned";
   emailVerified: boolean;
   phoneVerified: boolean;

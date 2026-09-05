@@ -25,3 +25,6 @@ export const PACKAGE_CATALOG = {
         sessionsPerMonth: 12
     }
 };
+export function findPackage(durationMinutes, collaborators) {
+    return (Object.values(PACKAGE_CATALOG).find((item) => item.durationMinutes === durationMinutes && item.collaborators === collaborators) ?? null);
+}

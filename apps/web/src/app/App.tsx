@@ -15,9 +15,9 @@ export default function App() {
         <nav>
           <Link to="/login">Login</Link>
           <Link to="/register">Registro</Link>
-          {user?.role === "provider" ? <Link to="/provider">Proveedor</Link> : null}
-          {user?.role === "client" ? <Link to="/collaborator">Colaborador</Link> : null}
-          {user?.role === "admin" ? <Link to="/admin">Admin</Link> : null}
+          {user?.role === "provider" ? <Link to="/provider/dashboard">Proveedor</Link> : null}
+          {user?.role === "client" ? <Link to="/collaborator/dashboard">Colaborador</Link> : null}
+          {user?.role === "admin" ? <Link to="/admin/dashboard">Admin</Link> : null}
         </nav>
         {user ? (
           <button type="button" onClick={() => void logout()}>

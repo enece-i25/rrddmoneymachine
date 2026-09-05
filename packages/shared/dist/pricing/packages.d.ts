@@ -7,3 +7,4 @@ export interface PackageDefinition {
     sessionsPerMonth?: number;
 }
 export declare const PACKAGE_CATALOG: Record<PackageName, PackageDefinition>;
+export declare function findPackage(durationMinutes: number, collaborators: number): PackageDefinition | null;

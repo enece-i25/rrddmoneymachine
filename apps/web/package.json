@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@rrdd/shared": "workspace:*",
+    "@tanstack/react-query": "^5.102.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0"

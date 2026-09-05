@@ -87,6 +87,80 @@ a {
   margin: 0;
 }
 
+.eyebrow {
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.page-heading,
+.section-heading,
+.balance-breakdown,
+.history-item,
+.shift-item {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-heading h2,
+.section-heading h3 {
+  margin: 0.2rem 0 0;
+}
+
+.muted,
+small {
+  color: var(--muted);
+}
+
+.live-pill,
+.tier-badge {
+  border: 1px solid #8aa58e;
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+}
+
+.tier-trusted { background: #e7f0d6; }
+.tier-elite { background: #ffe3a8; }
+
+.notice,
+.quote-box {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+
+.notice.warning,
+.session-warning,
+.status-disputada { background: #fff0cf; }
+
+.quote-box > div { display: flex; justify-content: space-between; gap: 1rem; }
+.quote-total { border-top: 1px solid var(--line); padding-top: 0.7rem; font-size: 1.1rem; }
+
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.history-list { display: grid; gap: 0.5rem; padding: 0; margin: 0; list-style: none; }
+.history-item,
+.shift-item { border-top: 1px solid var(--line); padding: 0.75rem 0; }
+.history-item > div,
+.shift-item > div { display: grid; gap: 0.25rem; }
+.history-status { text-align: right; }
+.status-completada { color: var(--ok); }
+.status-incumplida { color: var(--error); }
+.shift-full { opacity: 0.55; }
+.button-row { display: flex !important; flex-wrap: wrap; }
+.progress { height: 0.55rem; overflow: hidden; border-radius: 999px; background: #dce3d2; }
+.progress span { display: block; height: 100%; background: #3f7650; }
+
+@media (max-width: 620px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .page-heading, .section-heading, .balance-breakdown, .history-item, .shift-item { align-items: flex-start; flex-direction: column; }
+  .history-status { text-align: left; }
+}
+
 label {
   display: grid;
   gap: 0.35rem;

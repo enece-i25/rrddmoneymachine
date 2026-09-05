@@ -35,3 +35,11 @@ export const PACKAGE_CATALOG: Record<PackageName, PackageDefinition> = {
     sessionsPerMonth: 12
   }
 };
+
+export function findPackage(durationMinutes: number, collaborators: number): PackageDefinition | null {
+  return (
+    Object.values(PACKAGE_CATALOG).find(
+      (item) => item.durationMinutes === durationMinutes && item.collaborators === collaborators
+    ) ?? null
+  );
+}

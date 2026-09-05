@@ -2,8 +2,11 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { adminRouter } from "./routes/admin.routes.js";
+import { adminDashboardRouter } from "./routes/admin-dashboard.routes.js";
 import { authRouter } from "./routes/auth.routes.js";
+import { collaboratorsRouter } from "./routes/collaborators.routes.js";
 import { creditsRouter } from "./routes/credits.routes.js";
+import { dashboardRouter } from "./routes/dashboard.routes.js";
 import { heartbeatRouter } from "./routes/heartbeat.routes.js";
 import { paymentsRouter } from "./routes/payments.routes.js";
 import { sessionsRouter } from "./routes/sessions.routes.js";
@@ -26,6 +29,9 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/", dashboardRouter);
+app.use("/collaborators", collaboratorsRouter);
+app.use("/admin", adminDashboardRouter);
 app.use("/sessions", sessionsRouter);
 app.use("/heartbeat", heartbeatRouter);
 app.use("/payments", paymentsRouter);

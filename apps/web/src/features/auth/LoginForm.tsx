@@ -9,9 +9,9 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (user?.role === "provider") return <Navigate to="/provider" replace />;
-  if (user?.role === "client") return <Navigate to="/collaborator" replace />;
-  if (user?.role === "admin") return <Navigate to="/admin" replace />;
+  if (user?.role === "provider") return <Navigate to="/provider/dashboard" replace />;
+  if (user?.role === "client") return <Navigate to="/collaborator/dashboard" replace />;
+  if (user?.role === "admin") return <Navigate to="/admin/dashboard" replace />;
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();

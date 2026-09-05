@@ -1,69 +1,35 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "../../lib/api-client";
 import { useAuth } from "../auth/useAuth";
 import { CreditBalanceCard } from "./CreditBalanceCard";
+import { MetricsSummary } from "./MetricsSummary";
 import { NewRequestForm } from "./NewRequestForm";
+import { RequestHistoryList } from "./RequestHistoryList";
 
-type Summary = {
-  totalSessions: number;
-  activeSessions: number;
-  completedSessions: number;
-  disputedSessions: number;
-  pendingCredits: number;
-};
+type Dashboard = { metrics: { sessionsThisMonth: number; averageCompliance: number; investedThisMonth: number }; history: any[] };
+type Credits = { total: number; credits: any[] };
 
 export function ProviderDashboard() {
   const { accessToken } = useAuth();
-  const [summary, setSummary] = useState<Summary | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  async function loadSummary() {
-    if (!accessToken) return;
-
-    try {
-      const data = await apiRequest<Summary>("/sessions/provider/summary", { token: accessToken });
-      setSummary(data);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo cargar el dashboard");
-    }
-  }
-
-  useEffect(() => {
-    void loadSummary();
-  }, [accessToken]);
+  const dashboard = useQuery({ queryKey: ["provider-dashboard"], queryFn: () => apiRequest<Dashboard>("/provider/dashboard", { token: accessToken }), enabled: Boolean(accessToken), refetchInterval: 30000 });
+  const credits = useQuery({ queryKey: ["provider-credits"], queryFn: () => apiRequest<Credits>("/credits/me", { token: accessToken }), enabled: Boolean(accessToken), refetchInterval: 30000 });
 
   if (!accessToken) {
     return <p>Necesitas iniciar sesion</p>;
   }
 
+  if (dashboard.isLoading || credits.isLoading) return <p>Cargando panel...</p>;
+  if (dashboard.isError || credits.isError) return <p className="error">No se pudo cargar el panel. {dashboard.error?.message ?? credits.error?.message}</p>;
+  const dashboardData = dashboard.data!;
+  const creditData = credits.data!;
+
   return (
     <section className="stack">
-      <h2>Panel de proveedor</h2>
-      {error ? <p className="error">{error}</p> : null}
-      {summary ? (
-        <div className="grid-cards">
-          <article className="card stack">
-            <h3>Sesiones totales</h3>
-            <p className="metric">{summary.totalSessions}</p>
-          </article>
-          <article className="card stack">
-            <h3>En curso</h3>
-            <p className="metric">{summary.activeSessions}</p>
-          </article>
-          <article className="card stack">
-            <h3>Completadas</h3>
-            <p className="metric">{summary.completedSessions}</p>
-          </article>
-          <article className="card stack">
-            <h3>Disputadas</h3>
-            <p className="metric">{summary.disputedSessions}</p>
-          </article>
-        </div>
-      ) : null}
-
-      <CreditBalanceCard pendingCredits={summary?.pendingCredits ?? 0} />
-      <NewRequestForm token={accessToken} onCreated={() => void loadSummary()} />
+      <div className="page-heading"><div><span className="eyebrow">Operacion</span><h2>Panel de proveedor</h2></div><span className="live-pill">Datos en vivo</span></div>
+      <MetricsSummary metrics={dashboardData.metrics} />
+      <CreditBalanceCard total={creditData.total} credits={creditData.credits} />
+      <NewRequestForm token={accessToken} availableCredit={creditData.total} />
+      <RequestHistoryList items={dashboardData.history} />
     </section>
   );
 }

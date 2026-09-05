@@ -18,9 +18,9 @@ function ProtectedRole({ role }: { role: "provider" | "client" | "admin" }) {
   }
 
   if (user.role !== role) {
-    if (user.role === "provider") return <Navigate to="/provider" replace />;
-    if (user.role === "client") return <Navigate to="/collaborator" replace />;
-    return <Navigate to="/admin" replace />;
+    if (user.role === "provider") return <Navigate to="/provider/dashboard" replace />;
+    if (user.role === "client") return <Navigate to="/collaborator/dashboard" replace />;
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
   return <Outlet />;
@@ -34,15 +34,15 @@ export function AppRouter() {
       <Route path="/register" element={<RegisterForm />} />
 
       <Route element={<ProtectedRole role="provider" />}>
-        <Route path="/provider" element={<ProviderDashboard />} />
+        <Route path="/provider/dashboard" element={<ProviderDashboard />} />
       </Route>
 
       <Route element={<ProtectedRole role="client" />}>
-        <Route path="/collaborator" element={<CollaboratorDashboard />} />
+        <Route path="/collaborator/dashboard" element={<CollaboratorDashboard />} />
       </Route>
 
       <Route element={<ProtectedRole role="admin" />}>
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Route>
     </Routes>
   );

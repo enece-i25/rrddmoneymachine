@@ -88,6 +88,7 @@ export async function loginController(req: Request, res: Response): Promise<void
         userId: result.user.userId,
         email: result.user.email,
         role: result.user.role,
+        adminSubrole: result.user.adminSubrole,
         status: result.user.status,
         emailVerified: result.user.emailVerified,
         phoneVerified: result.user.phoneVerified
@@ -114,6 +115,7 @@ export async function refreshController(req: Request, res: Response): Promise<vo
         userId: result.user.userId,
         email: result.user.email,
         role: result.user.role,
+        adminSubrole: result.user.adminSubrole,
         status: result.user.status,
         emailVerified: result.user.emailVerified,
         phoneVerified: result.user.phoneVerified
