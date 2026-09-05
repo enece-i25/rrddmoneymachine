@@ -1,0 +1,8 @@
+node_modules
+.pnpm-store
+.env
+.env.local
+*.log
+apps/*/dist
+apps/*/.vite
+coverage

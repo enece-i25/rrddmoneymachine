@@ -1,0 +1,13 @@
+{
+  "name": "rrdd-money",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.12.1",
+  "scripts": {
+    "dev": "corepack pnpm -r --parallel dev",
+    "build": "corepack pnpm -r build",
+    "lint": "corepack pnpm -r lint",
+    "typecheck": "corepack pnpm -r typecheck",
+    "db:migrate": "corepack pnpm --filter @rrdd/api db:migrate"
+  }
+}
