@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "../../lib/api-client";
 import { useAuth } from "../auth/useAuth";
 import { BalanceCard } from "./BalanceCard";
@@ -6,6 +6,7 @@ import { AvailableShifts } from "./AvailableShifts";
 import { MetricsSummary } from "./MetricsSummary";
 import { TierBadge } from "./TierBadge";
 import { UpcomingSession } from "./UpcomingSession";
+import { useSocketEvent } from "../sessions/useSocket";
 
 type Summary = { tier: string; multiplier: number; averageCompliance: number; reputation: number; completedSessions: number; tierWarningActive: boolean; graceSessionsRemaining: number };
 type Balance = { pendingReview: number; available: number; withdrawalThreshold: number };
@@ -13,6 +14,11 @@ type Upcoming = { platform: string; scheduledDurationMin: number; startTime: str
 
 export function CollaboratorDashboard() {
   const { accessToken } = useAuth();
+  const queryClient = useQueryClient();
+  useSocketEvent(accessToken, "heartbeat:result", () => { void queryClient.invalidateQueries({ queryKey: ["collaborator-summary"] }); void queryClient.invalidateQueries({ queryKey: ["collaborator-balance"] }); void queryClient.invalidateQueries({ queryKey: ["available-shifts"] }); });
+  useSocketEvent(accessToken, "session:status_changed", () => { void queryClient.invalidateQueries({ queryKey: ["upcoming-session"] }); void queryClient.invalidateQueries({ queryKey: ["collaborator-summary"] }); });
+  useSocketEvent(accessToken, "balance:updated", () => void queryClient.invalidateQueries({ queryKey: ["collaborator-balance"] }));
+  useSocketEvent(accessToken, "withdrawal:updated", () => void queryClient.invalidateQueries({ queryKey: ["collaborator-balance"] }));
   const summary = useQuery({ queryKey: ["collaborator-summary"], queryFn: () => apiRequest<Summary>("/collaborators/me/summary", { token: accessToken }), enabled: Boolean(accessToken) });
   const balance = useQuery({ queryKey: ["collaborator-balance"], queryFn: () => apiRequest<Balance>("/collaborators/me/balance", { token: accessToken }), enabled: Boolean(accessToken), refetchInterval: 30000 });
   const upcoming = useQuery({ queryKey: ["upcoming-session"], queryFn: () => apiRequest<Upcoming>("/collaborators/me/upcoming", { token: accessToken }), enabled: Boolean(accessToken), refetchInterval: 30000 });

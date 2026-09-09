@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "../../lib/api-client";
 import { DisputeItem } from "./DisputeItem";
 
-type Dispute = { sessionId: string; compliancePct: number | null; reportedAt: string | null };
+type Dispute = { disputeId: string; sessionId: string; compliancePct: number | null; createdAt: string | null; reason?: string };
 
 export function DisputeQueue({ token }: { token: string }) {
   const disputes = useQuery({ queryKey: ["admin-disputes"], queryFn: () => apiRequest<Dispute[]>("/admin/disputes?status=pending", { token }), refetchInterval: 30000 });

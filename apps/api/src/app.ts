@@ -11,6 +11,7 @@ import { heartbeatRouter } from "./routes/heartbeat.routes.js";
 import { paymentsRouter } from "./routes/payments.routes.js";
 import { sessionsRouter } from "./routes/sessions.routes.js";
 import { webhooksRouter } from "./routes/webhooks.routes.js";
+import { notificationsRouter } from "./routes/notifications.routes.js";
 import { withdrawalsRouter } from "./routes/withdrawals.routes.js";
 
 const app = express();
@@ -39,6 +40,7 @@ app.use("/withdrawals", withdrawalsRouter);
 app.use("/credits", creditsRouter);
 app.use("/admin", adminRouter);
 app.use("/webhooks", webhooksRouter);
+app.use("/notifications", notificationsRouter);
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof Error) {

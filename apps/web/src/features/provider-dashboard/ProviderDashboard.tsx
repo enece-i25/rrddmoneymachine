@@ -1,16 +1,23 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "../../lib/api-client";
 import { useAuth } from "../auth/useAuth";
 import { CreditBalanceCard } from "./CreditBalanceCard";
 import { MetricsSummary } from "./MetricsSummary";
 import { NewRequestForm } from "./NewRequestForm";
 import { RequestHistoryList } from "./RequestHistoryList";
+import { useSocketEvent } from "../sessions/useSocket";
 
 type Dashboard = { metrics: { sessionsThisMonth: number; averageCompliance: number; investedThisMonth: number }; history: any[] };
 type Credits = { total: number; credits: any[] };
 
 export function ProviderDashboard() {
   const { accessToken } = useAuth();
+  const queryClient = useQueryClient();
+  const refresh = () => { void queryClient.invalidateQueries({ queryKey: ["provider-dashboard"] }); void queryClient.invalidateQueries({ queryKey: ["provider-credits"] }); };
+  useSocketEvent(accessToken, "session:applied", refresh);
+  useSocketEvent(accessToken, "session:status_changed", refresh);
+  useSocketEvent(accessToken, "balance:updated", refresh);
+  useSocketEvent(accessToken, "dispute:resolved", refresh);
   const dashboard = useQuery({ queryKey: ["provider-dashboard"], queryFn: () => apiRequest<Dashboard>("/provider/dashboard", { token: accessToken }), enabled: Boolean(accessToken), refetchInterval: 30000 });
   const credits = useQuery({ queryKey: ["provider-credits"], queryFn: () => apiRequest<Credits>("/credits/me", { token: accessToken }), enabled: Boolean(accessToken), refetchInterval: 30000 });
 

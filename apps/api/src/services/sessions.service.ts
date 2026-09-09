@@ -3,6 +3,7 @@ import { pool } from "../db/client.js";
 import { createSession, getProviderDashboardSummary } from "../db/repositories/sessions.repository.js";
 import { consumeProviderCredits, getProviderCreditTotal } from "../db/repositories/dashboard.repository.js";
 import { convertUsdToArs, createMercadoPagoPreference } from "./payments.service.js";
+import { emitRealtime, userRoom } from "../realtime.js";
 
 export async function createProviderSession(input: {
   providerId: string;
@@ -23,12 +24,13 @@ export async function createProviderSession(input: {
   const { mepRate, arsAmount } = await convertUsdToArs(amountUsd);
   const session = await createSession(input);
   await consumeProviderCredits(input.providerId, creditApplied);
+  if (creditApplied > 0) emitRealtime("balance:updated", [userRoom("provider", input.providerId)], { providerId: input.providerId, reason: "credit_consumed" });
 
   if (input.startTime) {
     await pool.query("UPDATE sessions SET start_time = $2 WHERE session_id = $1", [session.sessionId, input.startTime]);
   }
 
-  return {
+  const response = {
     ...session,
     package: packageDefinition.name,
     packagePriceUsd: packageDefinition.priceUsd,
@@ -38,6 +40,8 @@ export async function createProviderSession(input: {
     mepRate,
     checkoutUrl: amountUsd > 0 ? await createMercadoPagoPreference({ amountArs: arsAmount, sessionId: session.sessionId }) : null
   };
+  emitRealtime("session:created", ["admin"], { sessionId: session.sessionId, providerId: input.providerId });
+  return response;
 }
 
 export async function providerSummary(providerId: string) {

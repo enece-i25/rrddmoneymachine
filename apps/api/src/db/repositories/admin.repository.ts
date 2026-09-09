@@ -1,4 +1,6 @@
 import { pool } from "../client.js";
+import { finalizeSession } from "./session-lifecycle.repository.js";
+import { getPendingDisputesFromTable } from "./disputes.repository.js";
 
 export async function getAdminMetrics() {
   const result = await pool.query(
@@ -37,34 +39,20 @@ export async function getActiveSessions() {
 }
 
 export async function getPendingDisputes() {
-  const result = await pool.query(
-    `
-    SELECT
-      s.session_id AS "sessionId",
-      s.provider_id AS "providerId",
-      s.client_id AS "clientId",
-      s.compliance_pct AS "compliancePct",
-      s.end_time AS "reportedAt",
-      s.status
-    FROM sessions s
-    WHERE s.status = 'disputada'
-    ORDER BY s.end_time ASC NULLS LAST
-    `
-  );
-  return result.rows;
+  return getPendingDisputesFromTable();
 }
 
 export async function resolveDispute(sessionId: string, resolution: "provider" | "client" | "partial", notes?: string) {
-  const result = await pool.query(
-    `
-    UPDATE sessions
-    SET status = CASE WHEN $2 = 'provider' THEN 'completada' ELSE 'incumplida' END
-    WHERE session_id = $1 AND status = 'disputada'
-    RETURNING session_id AS "sessionId", status
-    `,
-    [sessionId, resolution]
-  );
-  return { ...(result.rows[0] ?? { sessionId, status: "disputada" }), resolution, notes: notes ?? null };
+  const status = resolution === "provider" ? "completada" : "incumplida";
+  const result = await finalizeSession(sessionId, status);
+  return {
+    sessionId: result?.sessionId ?? sessionId,
+    providerId: result?.providerId ?? null,
+    clientId: result?.clientId ?? null,
+    status: result?.status ?? "disputada",
+    resolution,
+    notes: notes ?? null
+  };
 }
 
 export async function getPendingWithdrawals() {

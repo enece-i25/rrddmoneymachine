@@ -26,12 +26,17 @@ export async function upcomingSessionController(req: Request, res: Response): Pr
 }
 
 export async function applySessionController(req: Request, res: Response): Promise<void> {
-  const result = await applyToSession(req.params.id, req.user!.userId);
-  if (!result) {
-    res.status(409).json({ message: "Session is no longer available" });
-    return;
+  try {
+    const result = await applyToSession(req.params.id, req.user!.userId);
+    if (!result) {
+      res.status(409).json({ message: "Session is no longer available" });
+      return;
+    }
+    res.json(result);
+  } catch (error) {
+    const statusCode = error && typeof error === "object" && "statusCode" in error ? Number(error.statusCode) : 400;
+    res.status(statusCode).json({ message: error instanceof Error ? error.message : "Unable to apply" });
   }
-  res.json(result);
 }
 
 export async function createWithdrawalController(req: Request, res: Response): Promise<void> {

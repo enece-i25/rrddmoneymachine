@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode
 } from "react";
-import { apiRequest } from "../../lib/api-client";
+import { apiRequest, configureAuthHandlers } from "../../lib/api-client";
 
 type Role = "provider" | "client" | "admin";
 
@@ -45,6 +45,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    configureAuthHandlers({
+      onAccessToken: setAccessToken,
+      onSessionExpired: () => {
+        setAccessToken(null);
+        setUser(null);
+        if (window.location.pathname !== "/login") window.location.assign("/login");
+      }
+    });
+  }, []);
 
   const refresh = useCallback(async () => {
     const payload = await apiRequest<{ accessToken: string; user: User }>("/auth/refresh", {

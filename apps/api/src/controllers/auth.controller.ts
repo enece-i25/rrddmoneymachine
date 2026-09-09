@@ -32,7 +32,7 @@ const REFRESH_COOKIE_NAME = "rrdd_refresh";
 function setRefreshCookie(res: Response, token: string): void {
   res.cookie(REFRESH_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.COOKIE_SECURE === "true",
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
@@ -129,7 +129,7 @@ export async function refreshController(req: Request, res: Response): Promise<vo
 export async function logoutController(_req: Request, res: Response): Promise<void> {
   res.clearCookie(REFRESH_COOKIE_NAME, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.COOKIE_SECURE === "true",
     sameSite: "lax"
   });
 

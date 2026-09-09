@@ -92,7 +92,7 @@ export async function consumeProviderCredits(providerId: string, requestedAmount
       const amount = Math.min(remaining, credit.amount);
       const nextAmount = credit.amount - amount;
       await client.query(
-        `UPDATE provider_credit SET amount = $2, status = CASE WHEN $2 <= 0 THEN 'consumed' ELSE status END, consumed_at = CASE WHEN $2 <= 0 THEN now() ELSE consumed_at END WHERE credit_id = $1`,
+        `UPDATE provider_credit SET amount = $2::numeric, status = CASE WHEN $2::numeric <= 0 THEN 'consumed' ELSE status END, consumed_at = CASE WHEN $2::numeric <= 0 THEN now() ELSE consumed_at END WHERE credit_id = $1`,
         [credit.creditId, nextAmount]
       );
       consumed += amount;

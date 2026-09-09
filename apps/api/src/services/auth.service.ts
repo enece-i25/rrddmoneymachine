@@ -33,6 +33,10 @@ function mustEnv(name: string): string {
 const accessSecret = mustEnv("JWT_ACCESS_SECRET");
 const refreshSecret = mustEnv("JWT_REFRESH_SECRET");
 
+export function hashPassword(password: string): Promise<string> {
+  return argon2.hash(password);
+}
+
 function issueTokens(user: UserRecord): AuthTokens {
   const accessToken = jwt.sign(
     {
@@ -65,7 +69,7 @@ export async function register(input: Omit<RegisterInput, "passwordHash"> & { pa
     throw new Error("Email already in use");
   }
 
-  const passwordHash = await argon2.hash(input.password);
+  const passwordHash = await hashPassword(input.password);
   const user = await createUser({
     email: input.email,
     passwordHash,

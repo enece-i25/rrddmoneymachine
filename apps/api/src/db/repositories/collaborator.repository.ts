@@ -104,7 +104,7 @@ export async function applyToSession(sessionId: string, clientId: string) {
     WHERE session_id = $1
       AND status = 'programada'
       AND client_id IS NULL
-    RETURNING session_id AS "sessionId"
+    RETURNING session_id AS "sessionId", provider_id AS "providerId"
     `,
     [sessionId, clientId]
   );

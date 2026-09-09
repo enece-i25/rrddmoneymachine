@@ -85,3 +85,28 @@ Shared rules:
 - web: vite build served by nginx alpine multi-stage image
 
 All services communicate through explicit rrdd-network network.
+
+## Realtime and heartbeat
+
+Socket.IO runs on the API HTTP port and authenticates with the access JWT during the handshake. Users join only their scoped provider/collaborator room; admins join `admin`.
+
+The heartbeat monitor reads `HEARTBEAT_INTERVAL_MS` (default 5 minutes) and `HEARTBEAT_WINDOW_MS` (default 90 seconds). For QA only, use an uncommitted `.env.local` or Compose environment override such as 20000ms/10000ms; never change the production defaults in `.env.example`.
+
+The browser requests Web Notifications permission when a collaborator receives a heartbeat prompt. Firebase Cloud Messaging remains the next step for notifications while the app is fully closed.
+
+## QA heartbeat seed
+
+The guarded development-only seed creates three idempotent QA users and one `en_curso` session:
+
+   $env:ALLOW_SEED="true"
+   docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm -e ALLOW_SEED=true api pnpm --filter @rrdd/api seed
+
+Credentials are printed by the command and use the password `Test1234!`. The seed refuses to run unless `ALLOW_SEED=true` and `NODE_ENV` is not production. The production API image intentionally excludes `tsx`, so use the explicit development Compose command above for seeding.
+
+For short QA heartbeat cycles in PowerShell, set these variables before recreating the API:
+
+   $env:HEARTBEAT_INTERVAL_MS="20000"
+   $env:HEARTBEAT_WINDOW_MS="10000"
+   docker compose up -d --build api
+
+The test session is `en_curso` immediately after seeding. Its first prompt is scheduled by the API startup scan, so no manual status transition is required.

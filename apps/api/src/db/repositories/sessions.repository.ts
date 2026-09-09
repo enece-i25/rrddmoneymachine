@@ -58,3 +58,11 @@ export async function createSession(input: {
 
   return result.rows[0];
 }
+
+export async function findActiveByClientId(clientId: string) {
+  const result = await pool.query<{ sessionId: string }>(
+    `SELECT session_id AS "sessionId" FROM sessions WHERE client_id = $1 AND status IN ('programada', 'en_curso') LIMIT 1`,
+    [clientId]
+  );
+  return result.rows[0] ?? null;
+}
